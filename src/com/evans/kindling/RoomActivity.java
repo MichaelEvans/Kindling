@@ -26,7 +26,8 @@ public class RoomActivity extends Activity {
 
 	private String token;
 	private ListView roomListView;
-
+	private ArrayList<Room> roomList;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -36,7 +37,20 @@ public class RoomActivity extends Activity {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 			    // When clicked, show a toast with the TextView text
-				startActivity(new Intent(RoomActivity.this, ChatActivity.class));
+				Intent i = new Intent(RoomActivity.this, ChatActivity.class);
+				Bundle b = new Bundle();
+				Room r = roomList.get(position);
+				//Log.e("Kindling", r.toString());
+		        b.putParcelable("room", r);
+				i.putExtras(b);
+//				//extras.putParcelable("room", r);
+//				
+				Intent intent = new Intent(RoomActivity.this, ChatService.class);
+				startService(intent);
+				ChatService.getInstance().activeRooms.add(r);
+				Log.e("Kindling", Integer.toString(ChatService.getInstance().activeRooms.size()));
+				
+				startActivity(i);
 			}
 		});
 		SharedPreferences preferences = this.getSharedPreferences("Kindling", MODE_PRIVATE);
@@ -84,7 +98,7 @@ public class RoomActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(ArrayList<Room> roomlist) {
-			
+			roomList = roomlist;
 			//new RoomInfoFetch().execute(list);
 //			for(Room r : list){
 //				Log.e("Kindling", r.getName() + " " + r.getUserCount());
@@ -134,5 +148,11 @@ public class RoomActivity extends Activity {
 		return true;
 	}
 
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		Intent intent = new Intent(RoomActivity.this, ChatService.class);
+		stopService(intent);
+	}
 
 }

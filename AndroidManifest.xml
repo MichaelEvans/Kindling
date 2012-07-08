@@ -28,11 +28,15 @@
         </activity>
         <activity
             android:name=".ChatActivity"
-            android:label="@string/title_activity_chat" >
+            android:label="@string/title_activity_chat"
+            android:windowSoftInputMode="adjustPan" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.evans.kindling.RoomActivity" />
         </activity>
+
+        <service android:name="ChatService" >
+        </service>
     </application>
 
 </manifest>
