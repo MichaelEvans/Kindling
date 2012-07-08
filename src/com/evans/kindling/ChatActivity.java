@@ -41,6 +41,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.evans.kindling.listadapters.ChatMessageAdapter;
 import com.evans.kindling.model.ChatMessage;
 import com.evans.kindling.model.Room;
 import com.google.common.collect.Iterables;
@@ -69,7 +70,8 @@ public class ChatActivity extends FragmentActivity {
 	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			updateUI(intent);       
+			updateUI(intent);   
+			abortBroadcast();
 		}
 
 

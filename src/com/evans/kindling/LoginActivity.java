@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -18,13 +20,15 @@ import com.github.kevinsawicki.http.HttpRequest;
 
 public class LoginActivity extends Activity {
 
+	private EditText password;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 		Button submitButton = (Button) findViewById(R.id.loginButton);
 		final EditText login = (EditText) findViewById(R.id.username);
-		final EditText password = (EditText) findViewById(R.id.password);
+		password = (EditText) findViewById(R.id.password);
 
 		submitButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -76,13 +80,15 @@ public class LoginActivity extends Activity {
 				SharedPreferences.Editor editor = preferences.edit();
 				editor.putString("token", token); // value to store
 				editor.commit();
-				
+
 				Intent intent = new Intent();
-	            intent.setClass(LoginActivity.this, RoomActivity.class);
-	            startActivity(intent);
-	            finish();
+				intent.setClass(LoginActivity.this, RoomActivity.class);
+				startActivity(intent);
+				finish();
 			}else{
 				//TODO: Give an error message;
+				Animation shake = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.shake);
+				password.startAnimation(shake);
 			}
 
 		}

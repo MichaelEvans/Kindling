@@ -84,7 +84,7 @@ public class ChatService extends Service {
 										b.putParcelable("message", cm);
 										broadcast.putExtras(b);
 										broadcast.setAction(BROADCAST_ACTION);
-										sendBroadcast(broadcast);
+										sendOrderedBroadcast(broadcast, null);
 									//}
 							}
 						}
