@@ -1,9 +1,9 @@
 package com.evans.kindling;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,7 +24,7 @@ import com.github.kevinsawicki.http.HttpRequest;
 public class ChatService extends Service {
 	public static String BROADCAST_ACTION = "com.evans.kindling.NEWMESSAGE";
 
-	public static Set<Room> activeRooms = new HashSet<Room>();
+	private static Set<Room> activeRooms = new ConcurrentSkipListSet<Room>();
 	static final int UPDATE_INTERVAL= 1000;
 	private static String token;
 	private Timer timer = new Timer();
@@ -60,8 +60,8 @@ public class ChatService extends Service {
 	private void doSomethingRepeatedly() {
 		timer.scheduleAtFixedRate(new TimerTask() {
 			public void run() {
-				Log.e("Kindling", "Fetching new messages for room " + activeRooms.toArray()[0]);
-				for(Room r : activeRooms){
+				//Log.e("Kindling", "Fetching new messages for room " + activeRooms.toArray()[0]);
+				for(Room r : getActiveRooms()){
 					HttpRequest response = HttpRequest.get("https://michaelevans.campfirenow.com/room/"+r.getId()+"/recent.json?since_message_id="+r.getLastMessageId()).basic(token, "x");
 					String body = response.body();
 					try {
@@ -80,6 +80,7 @@ public class ChatService extends Service {
 									//if(r.addMessage(cm)){
 										Intent broadcast = new Intent();
 										Bundle b = new Bundle();
+										b.putInt("room", r.getId());
 										b.putParcelable("message", cm);
 										broadcast.putExtras(b);
 										broadcast.setAction(BROADCAST_ACTION);
@@ -99,7 +100,7 @@ public class ChatService extends Service {
 	@Override
 	public void onDestroy() {
 		String temp = "";
-		for(Room r : activeRooms){
+		for(Room r : getActiveRooms()){
 			temp += r.getName() + " ";
 		}
 		Toast.makeText(this, "My Service Stopped", Toast.LENGTH_LONG).show();
@@ -115,5 +116,13 @@ public class ChatService extends Service {
 		Toast.makeText(this, "My Service Started", Toast.LENGTH_LONG).show();
 		//		Log.d(TAG, "onStart");
 		//		player.start();
+	}
+
+	public static Set<Room> getActiveRooms() {
+		return activeRooms;
+	}
+
+	public static void setActiveRooms(Set<Room> activeRooms) {
+		ChatService.activeRooms = activeRooms;
 	}
 }

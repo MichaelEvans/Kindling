@@ -1,15 +1,12 @@
 package com.evans.kindling.model;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.TreeSet;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Room implements Parcelable{
+public class Room implements Parcelable, Comparable<Room>{
 	private String name;
 	//	private Date createdAt;
 	//	private Date updatedAt;
@@ -17,7 +14,6 @@ public class Room implements Parcelable{
 	private Integer id;
 	private ArrayList<String> usersInRoom;
 	private Integer userCount;
-	private ChatMessage lastMessage;
 	private TreeSet<ChatMessage> recentMessages = new TreeSet<ChatMessage>();
 	public Room(){
 		
@@ -92,5 +88,9 @@ public class Room implements Parcelable{
 	}
 	public TreeSet<ChatMessage> getMessages(){
 		return recentMessages;
+	}
+	@Override
+	public int compareTo(Room another) {
+		return this.getId().compareTo(another.getId());
 	}
 }

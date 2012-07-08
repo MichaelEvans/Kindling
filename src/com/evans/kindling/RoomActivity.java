@@ -45,14 +45,18 @@ public class RoomActivity extends Activity {
 				i.putExtras(b);
 //				//extras.putParcelable("room", r);
 //				
-				Intent intent = new Intent(RoomActivity.this, ChatService.class);
-				startService(intent);
-				ChatService.getInstance().activeRooms.add(r);
-				Log.e("Kindling", Integer.toString(ChatService.getInstance().activeRooms.size()));
+				
+				
+				ChatService.getActiveRooms().add(r);
+				Log.e("Kindling", Integer.toString(ChatService.getActiveRooms().size()));
 				
 				startActivity(i);
 			}
 		});
+		Intent serviceIntent = new Intent(getApplicationContext(), ChatService.class);
+		if(!ChatService.isInstanceCreated())
+			startService(serviceIntent);
+		
 		SharedPreferences preferences = this.getSharedPreferences("Kindling", MODE_PRIVATE);
 		token = preferences.getString("token", null);
 		Log.e("Kindling", "Token: " + token);
@@ -151,6 +155,7 @@ public class RoomActivity extends Activity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		//ChatActivity.removeAllRooms();
 		Intent intent = new Intent(RoomActivity.this, ChatService.class);
 		stopService(intent);
 	}

@@ -1,20 +1,15 @@
 package com.evans.kindling;
 
-import java.util.Iterator;
 import java.util.TreeSet;
 
-import android.R.menu;
 import android.content.Context;
-import android.renderscript.Mesh;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.evans.kindling.RoomListAdapter.ViewHolder;
 import com.evans.kindling.model.ChatMessage;
-import com.evans.kindling.model.Room;
 import com.google.common.collect.Iterables;
 
 public class ChatMessageAdapter extends BaseAdapter {
