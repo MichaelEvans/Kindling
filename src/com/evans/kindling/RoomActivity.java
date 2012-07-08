@@ -28,7 +28,7 @@ public class RoomActivity extends Activity {
 	private String token;
 	private ListView roomListView;
 	private ArrayList<Room> roomList;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -37,27 +37,27 @@ public class RoomActivity extends Activity {
 		roomListView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-			    // When clicked, show a toast with the TextView text
+				// When clicked, show a toast with the TextView text
 				Intent i = new Intent(RoomActivity.this, ChatActivity.class);
 				Bundle b = new Bundle();
 				Room r = roomList.get(position);
 				//Log.e("Kindling", r.toString());
-		        b.putParcelable("room", r);
+				b.putParcelable("room", r);
 				i.putExtras(b);
-//				//extras.putParcelable("room", r);
-//				
-				
-				
+				//				//extras.putParcelable("room", r);
+				//				
+
+
 				ChatService.getActiveRooms().add(r);
 				Log.e("Kindling", Integer.toString(ChatService.getActiveRooms().size()));
-				
+
 				startActivity(i);
 			}
 		});
 		Intent serviceIntent = new Intent(getApplicationContext(), ChatService.class);
 		if(!ChatService.isInstanceCreated())
 			startService(serviceIntent);
-		
+
 		SharedPreferences preferences = this.getSharedPreferences("Kindling", MODE_PRIVATE);
 		token = preferences.getString("token", null);
 		Log.e("Kindling", "Token: " + token);
@@ -105,9 +105,9 @@ public class RoomActivity extends Activity {
 		protected void onPostExecute(ArrayList<Room> roomlist) {
 			roomList = roomlist;
 			//new RoomInfoFetch().execute(list);
-//			for(Room r : list){
-//				Log.e("Kindling", r.getName() + " " + r.getUserCount());
-//			}
+			//			for(Room r : list){
+			//				Log.e("Kindling", r.getName() + " " + r.getUserCount());
+			//			}
 			//			String str[] = (String []) list.toArray (new String[list.size()]);
 			RoomListAdapter adapter = new RoomListAdapter(getApplicationContext(), roomlist);
 			roomListView.setAdapter(adapter);
@@ -156,9 +156,18 @@ public class RoomActivity extends Activity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		//ChatActivity.removeAllRooms();
+		ChatActivity.removeAllRooms();
+		roomList = new ArrayList<Room>();
 		Intent intent = new Intent(RoomActivity.this, ChatService.class);
 		stopService(intent);
+	}
+
+	public ArrayList<Room> getRoomList() {
+		return roomList;
+	}
+
+	public void setRoomList(ArrayList<Room> roomList) {
+		this.roomList = roomList;
 	}
 
 }

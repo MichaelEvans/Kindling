@@ -69,6 +69,9 @@ public class Room implements Parcelable, Comparable<Room>{
 			return new Room[size];
 		}
 	};
+	public boolean containsMessage(ChatMessage message){
+		return recentMessages.contains(message);
+	}
 	public boolean addMessage(ChatMessage message){
 		boolean added = recentMessages.add(message);
 //		if(recentMessages.size()>100){
@@ -80,8 +83,7 @@ public class Room implements Parcelable, Comparable<Room>{
 	}
 	public int getLastMessageId(){
 		try{
-			int id = recentMessages.first().getId();
-			return id;
+			return recentMessages.first().getId();
 		}catch(Exception e){
 			return 0;
 		}

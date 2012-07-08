@@ -1,5 +1,6 @@
 package com.evans.kindling;
 
+import java.util.HashMap;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -25,6 +26,7 @@ public class ChatService extends Service {
 	public static String BROADCAST_ACTION = "com.evans.kindling.NEWMESSAGE";
 
 	private static Set<Room> activeRooms = new ConcurrentSkipListSet<Room>();
+	private static HashMap<Room, Integer> lastMessageForRoom = new HashMap();
 	static final int UPDATE_INTERVAL= 1000;
 	private static String token;
 	private Timer timer = new Timer();
@@ -62,7 +64,9 @@ public class ChatService extends Service {
 			public void run() {
 				//Log.e("Kindling", "Fetching new messages for room " + activeRooms.toArray()[0]);
 				for(Room r : getActiveRooms()){
-					HttpRequest response = HttpRequest.get("https://michaelevans.campfirenow.com/room/"+r.getId()+"/recent.json?since_message_id="+r.getLastMessageId()).basic(token, "x");
+					
+					Log.w("Kindling", "" + lastMessageForRoom.get(r) + " " + r.getMessages().size());
+					HttpRequest response = HttpRequest.get("https://michaelevans.campfirenow.com/room/"+r.getId()+"/recent.json?since_message_id="+lastMessageForRoom.get(r)).basic(token, "x");
 					String body = response.body();
 					try {
 						JSONObject object = new JSONObject(body);
@@ -73,19 +77,22 @@ public class ChatService extends Service {
 							if(temp.getString("body") != null && !temp.getString("body").equals("null")){
 								cm.setId(temp.getInt("id"));
 								cm.setBody(temp.getString("body"));
-								Log.d("Kindling", ""+ cm.getId());
-								//							if(temp.getString("user_id") != null)
-								//								cm.setUserId(temp.getInt("user_id"));
-								//if(temp.getInt("id")<r.getLastMessageId())
+								if(!r.containsMessage(cm)){
+									Log.d("Kindling", ""+ cm.getId() + " " +r.getLastMessageId());
+									//							if(temp.getString("user_id") != null)
+									//								cm.setUserId(temp.getInt("user_id"));
+									//if(temp.getInt("id")<r.getLastMessageId())
 									//if(r.addMessage(cm)){
-										Intent broadcast = new Intent();
-										Bundle b = new Bundle();
-										b.putInt("room", r.getId());
-										b.putParcelable("message", cm);
-										broadcast.putExtras(b);
-										broadcast.setAction(BROADCAST_ACTION);
-										sendOrderedBroadcast(broadcast, null);
-									//}
+									lastMessageForRoom.put(r, cm.getId());
+									Intent broadcast = new Intent();
+									Bundle b = new Bundle();
+									b.putInt("room", r.getId());
+									b.putParcelable("message", cm);
+									broadcast.putExtras(b);
+									broadcast.setAction(BROADCAST_ACTION);
+									sendOrderedBroadcast(broadcast, null);
+								}
+								//}
 							}
 						}
 					} catch (JSONException e) {
@@ -124,5 +131,9 @@ public class ChatService extends Service {
 
 	public static void setActiveRooms(Set<Room> activeRooms) {
 		ChatService.activeRooms = activeRooms;
+	}
+	public static void addRoom(Room r){
+		activeRooms.add(r);
+		lastMessageForRoom.put(r, 0);
 	}
 }
