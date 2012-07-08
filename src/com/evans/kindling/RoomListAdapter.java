@@ -2,7 +2,6 @@ package com.evans.kindling;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,12 +13,10 @@ import com.evans.kindling.model.Room;
 
 public class RoomListAdapter extends BaseAdapter {
 
-	private Context context;
 	private final ArrayList<Room> values;
 	private static LayoutInflater inflater;
 
 	public RoomListAdapter(Context ctx, ArrayList<Room> rooms) {
-		context = ctx;
 		values = rooms;
 		inflater = (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}

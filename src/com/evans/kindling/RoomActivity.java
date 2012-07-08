@@ -13,6 +13,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.evans.kindling.model.Room;
@@ -29,7 +32,13 @@ public class RoomActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_room);
 		roomListView = (ListView) findViewById(R.id.roomList);
-
+		roomListView.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+			    // When clicked, show a toast with the TextView text
+				startActivity(new Intent(RoomActivity.this, ChatActivity.class));
+			}
+		});
 		SharedPreferences preferences = this.getSharedPreferences("Kindling", MODE_PRIVATE);
 		token = preferences.getString("token", null);
 		Log.e("Kindling", "Token: " + token);

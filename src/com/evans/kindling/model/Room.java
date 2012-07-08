@@ -1,13 +1,12 @@
 package com.evans.kindling.model;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 public class Room {
 	private String name;
-	private Date createdAt;
-	private Date updatedAt;
-	private String topic;
+//	private Date createdAt;
+//	private Date updatedAt;
+//	private String topic;
 	private Integer id;
 	private ArrayList<String> usersInRoom;
 	private Integer userCount;
