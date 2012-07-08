@@ -6,10 +6,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.evans.kindling.model.Room;
-import com.github.kevinsawicki.http.HttpRequest;
-import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,13 +13,17 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.evans.kindling.model.Room;
+import com.github.kevinsawicki.http.HttpRequest;
+import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 
 public class RoomActivity extends Activity {
 
 	private String token;
 	private ListView roomListView;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -63,7 +63,6 @@ public class RoomActivity extends Activity {
 					Room room = new Room();
 					room.setId(obj.getInt("id"));
 					room.setName(obj.getString("name"));
-					new RoomInfoFetch().execute(room);
 					roomList.add(room);
 				}
 			} catch (HttpRequestException e) {
@@ -73,41 +72,52 @@ public class RoomActivity extends Activity {
 			}
 			return roomList;
 		}
-		
+
 		@Override
-		protected void onPostExecute(ArrayList<Room> list) {
+		protected void onPostExecute(ArrayList<Room> roomlist) {
 			
-//			String str[] = (String []) list.toArray (new String[list.size()]);
-//			ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
-//					android.R.layout.simple_list_item_1, android.R.id.text1, str);
-//
-//			roomListView.setAdapter(adapter);
+			//new RoomInfoFetch().execute(list);
+//			for(Room r : list){
+//				Log.e("Kindling", r.getName() + " " + r.getUserCount());
+//			}
+			//			String str[] = (String []) list.toArray (new String[list.size()]);
+			RoomListAdapter adapter = new RoomListAdapter(getApplicationContext(), roomlist);
+			roomListView.setAdapter(adapter);
+			Log.e("Kindling", "msg");
 		}
 
 	}
-	
-	class RoomInfoFetch extends AsyncTask<Room, String, Room>{
 
-		@Override
-		protected Room doInBackground(Room... params) {
-			// TODO Auto-generated method stub
-			Room temp = params[0];
-			HttpRequest response = HttpRequest.get("https://michaelevans.campfirenow.com/room/"+ temp.getId() +".json").basic(token, "x");
-			String body = response.body();
-			try {
-				JSONObject json = new JSONObject(body);
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-			Log.e("Kindling", "Room Info: " + body);
-			return params[0];
-		}
-		
-//		@Override
-//		protected void onPostExecute(Room> room) {
-//			
-//		}
-	}
+	//	class RoomInfoFetch extends AsyncTask<ArrayList<Room>, String, ArrayList<Room>>{
+	//
+	//		@Override
+	//		protected ArrayList<Room> doInBackground(ArrayList<Room>... params) {
+	//			// TODO Auto-generated method stub
+	//			ArrayList<Room> rooms = params[0];
+	//			ArrayList<Room> newList = new ArrayList<Room>();
+	//			for(Room temp : rooms){
+	//				HttpRequest response = HttpRequest.get("https://michaelevans.campfirenow.com/room/"+ temp.getId() +".json").basic(token, "x");
+	//				String body = response.body();
+	//				try {
+	//					JSONObject json = new JSONObject(body);
+	//					JSONObject room = json.getJSONObject("room");
+	//					temp.setUserCount(room.getJSONArray("users").length());
+	//				} catch (JSONException e) {
+	//					e.printStackTrace();
+	//				}
+	//			}
+	//			return newList;
+	//		}
+	//
+	//		@Override
+	//		protected void onPostExecute(ArrayList<Room> list) {
+	//			
+	//		}
+	//		//		@Override
+	//		//		protected void onPostExecute(Room room) {
+	//		//			
+	//		//		}
+	//	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

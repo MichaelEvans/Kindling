@@ -10,6 +10,7 @@ public class Room {
 	private String topic;
 	private Integer id;
 	private ArrayList<String> usersInRoom;
+	private Integer userCount;
 	
 	public String getName() {
 		return name;
@@ -22,5 +23,17 @@ public class Room {
 	}
 	public void setId(Integer id) {
 		this.id = id;
+	}
+	public ArrayList<String> getUsersInRoom() {
+		return usersInRoom;
+	}
+	public void setUsersInRoom(ArrayList<String> usersInRoom) {
+		this.usersInRoom = usersInRoom;
+	}
+	public Integer getUserCount() {
+		return userCount;
+	}
+	public void setUserCount(Integer userCount) {
+		this.userCount = userCount;
 	}
 }
