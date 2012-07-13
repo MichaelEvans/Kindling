@@ -62,7 +62,7 @@ public class ChatMessageAdapter extends BaseAdapter {
 		holder.author.setText(message.getAuthor()+":");
 		holder.message.setText(message.getBody());
 		//Log.d("testA","Display"+message.output2());
-		holder.date.setText(message.getDate().substring(5, 16));
+		holder.date.setText(message.getDate());
 		//holder.date.setText(room.getCreatedAt().toString());
 		/*date = room.getCreatedAt();
 		holder.date.setText(""+

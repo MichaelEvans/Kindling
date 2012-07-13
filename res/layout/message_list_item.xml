@@ -11,6 +11,7 @@
         android:background="#FFFFFF"
         android:paddingLeft="6dip"
         android:paddingTop="6dip"
+        android:textSize="12dip"
         android:text="@string/sample_author"
         android:textColor="#000000" />
     
@@ -19,12 +20,12 @@
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_alignWithParentIfMissing="true"
-	    android:layout_toRightOf="@id/message_author"
-	     android:singleLine="false"
+	    
+	    android:layout_below="@id/message_author"
+	    android:singleLine="false"
 	    android:background="#FFFFFF"
-	    android:minHeight="15dip"
-	    android:paddingLeft="3dip"
-	    android:paddingTop="6dip"
+	    android:paddingLeft="6dip"
+	    android:paddingTop="1dip"
 	    android:text="@string/sample_message"
 	    android:textSize="15dip"
 	    android:textColor="@color/holo">
@@ -38,7 +39,7 @@
 		android:layout_width="wrap_content" 
 		android:text="@string/sample_time" 
 		android:paddingRight="7dip"
-		android:paddingBottom="3dip"
+		android:paddingBottom="1dip"
 		android:textSize="9dip"
 		android:layout_height="wrap_content">
      </TextView>
