@@ -26,11 +26,11 @@ public class ChatService extends Service {
 	public static String BROADCAST_ACTION = "com.evans.kindling.NEWMESSAGE";
 
 	private static Set<Room> activeRooms = new ConcurrentSkipListSet<Room>();
-	private static HashMap<Room, Integer> lastMessageForRoom = new HashMap();
+	private static HashMap<Room, Integer> lastMessageForRoom = new HashMap<Room, Integer>();
 	static final int UPDATE_INTERVAL= 1000;
 	private static String token;
 	private Timer timer = new Timer();
-
+	
 	private static ChatService instance = null;
 
 	public static boolean isInstanceCreated() { 
@@ -77,6 +77,8 @@ public class ChatService extends Service {
 							if(temp.getString("body") != null && !temp.getString("body").equals("null")){
 								cm.setId(temp.getInt("id"));
 								cm.setBody(temp.getString("body"));
+								cm.setDate(temp.getString("created_at"));
+								cm.setAuthor(temp.getString("user_id"));
 								if(!r.containsMessage(cm)){
 									Log.d("Kindling", ""+ cm.getId() + " " +r.getLastMessageId());
 									//							if(temp.getString("user_id") != null)
@@ -88,6 +90,7 @@ public class ChatService extends Service {
 									Bundle b = new Bundle();
 									b.putInt("room", r.getId());
 									b.putParcelable("message", cm);
+									//Log.d("testA", "CS"+cm.output2());
 									broadcast.putExtras(b);
 									broadcast.setAction(BROADCAST_ACTION);
 									sendOrderedBroadcast(broadcast, null);

@@ -48,11 +48,11 @@ public class Room implements Parcelable, Comparable<Room>{
 	public void setUserCount(Integer userCount) {
 		this.userCount = userCount;
 	}
-	@Override
+	//@Override
 	public int describeContents() {
 		return 0;
 	}
-	@Override
+	//@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeStringArray(new String[] { Integer.toString(id), name });
 		//		dest.writeInt(id);
@@ -91,7 +91,7 @@ public class Room implements Parcelable, Comparable<Room>{
 	public TreeSet<ChatMessage> getMessages(){
 		return recentMessages;
 	}
-	@Override
+	//@Override
 	public int compareTo(Room another) {
 		return this.getId().compareTo(another.getId());
 	}
