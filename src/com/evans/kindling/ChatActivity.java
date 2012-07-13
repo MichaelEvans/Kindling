@@ -124,15 +124,17 @@ public class ChatActivity extends FragmentActivity {
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 
 		mViewPager.setOnPageChangeListener(new OnPageChangeListener() {
-			//@Override
+			@Override
 			public void onPageSelected(int position) {
 				Log.e("Kindling", "" + position);
 				((DummySectionFragment) mapping.get(Iterables.get(activeRooms, position))).scrollToBottom();
 			}
-			//@Override
+			
+			@Override
 			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 			}
-			//@Override
+			
+			@Override
 			public void onPageScrollStateChanged(int state) {
 			}
 		});
@@ -277,7 +279,7 @@ public class ChatActivity extends FragmentActivity {
 			RelativeLayout.LayoutParams tvParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 			EditText edit = new EditText(getActivity());
 			edit.setOnEditorActionListener(new OnEditorActionListener() {
-				//@Override
+				@Override
 				public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 					if(v.getText().toString().length()>0)
 						new SubmitMessage().execute(v.getText().toString(), String.valueOf(Iterables.get(activeRooms, args.getInt(ARG_SECTION_NUMBER)).getId()));

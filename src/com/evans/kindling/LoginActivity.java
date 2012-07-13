@@ -30,9 +30,9 @@ public class LoginActivity extends Activity {
 		final EditText login = (EditText) findViewById(R.id.username);
 		password = (EditText) findViewById(R.id.password);
 		login.setOnClickListener(new OnClickListener() {
-			//@Override
+			@Override
 			public void onClick(View v) {
-				if (login.getText().toString().compareTo("Username")==0){ 
+				if (login.getText().toString().compareTo("Username")==0){ //TODO
 					login.setText("");
 					password.setText("");
 				}
@@ -40,7 +40,7 @@ public class LoginActivity extends Activity {
 		});
 				
 		submitButton.setOnClickListener(new OnClickListener() {
-			//@Override
+			@Override
 			public void onClick(View v) {
 				//doLogin(login.getText().toString(), password.getText().toString());	
 				new LoginTask().execute(login.getText().toString(), password.getText().toString());

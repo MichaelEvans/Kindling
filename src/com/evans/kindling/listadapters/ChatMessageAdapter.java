@@ -1,10 +1,8 @@
 package com.evans.kindling.listadapters;
 
-import java.util.Date;
 import java.util.TreeSet;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,24 +24,23 @@ public class ChatMessageAdapter extends BaseAdapter {
 		inflater = (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
-	//@Override
+	@Override
 	public int getCount() {
-		// TODO Auto-generated method stub
 		return values.size();
 	}
 
-	//@Override
+	@Override
 	public Object getItem(int k) {
 		ChatMessage element = Iterables.get(values, k);
 		return element;
 	}
 
-	//@Override
+	@Override
 	public long getItemId(int arg0) {
 		return 0;
 	}
 
-	//@Override
+	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View vi=convertView;
 		ViewHolder holder;

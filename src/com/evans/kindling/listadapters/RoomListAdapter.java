@@ -21,19 +21,22 @@ public class RoomListAdapter extends BaseAdapter {
 		values = rooms;
 		inflater = (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
-	//@Override
+	@Override
 	public int getCount() {
 		return values.size();
 	}
-	//@Override
+	
+	@Override
 	public Object getItem(int arg0) {
 		return values.get(arg0);
 	}
-	//@Override
+	
+	@Override
 	public long getItemId(int arg0) {
 		return arg0;
 	}
-	//@Override
+	
+	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View vi=convertView;
 		ViewHolder holder;

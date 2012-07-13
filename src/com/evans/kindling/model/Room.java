@@ -18,41 +18,52 @@ public class Room implements Parcelable, Comparable<Room>{
 	public Room(){
 		
 	}
+	
 	public Room(Parcel in){
 		String[] data = new String[2];
 		in.readStringArray(data);
 		this.id = Integer.parseInt(data[0]);
 		this.name = data[1];
 	}
+	
 	public String getName() {
 		return name;
 	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}
+	
 	public Integer getId() {
 		return id;
 	}
+	
 	public void setId(Integer id) {
 		this.id = id;
 	}
+	
 	public ArrayList<String> getUsersInRoom() {
 		return usersInRoom;
 	}
+	
 	public void setUsersInRoom(ArrayList<String> usersInRoom) {
 		this.usersInRoom = usersInRoom;
 	}
+	
 	public Integer getUserCount() {
 		return userCount;
 	}
+	
 	public void setUserCount(Integer userCount) {
 		this.userCount = userCount;
 	}
-	//@Override
+	
+	@Override
 	public int describeContents() {
 		return 0;
 	}
-	//@Override
+	
+	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeStringArray(new String[] { Integer.toString(id), name });
 		//		dest.writeInt(id);
@@ -69,9 +80,11 @@ public class Room implements Parcelable, Comparable<Room>{
 			return new Room[size];
 		}
 	};
+	
 	public boolean containsMessage(ChatMessage message){
 		return recentMessages.contains(message);
 	}
+	
 	public boolean addMessage(ChatMessage message){
 		boolean added = recentMessages.add(message);
 //		if(recentMessages.size()>100){
@@ -81,6 +94,7 @@ public class Room implements Parcelable, Comparable<Room>{
 //		}
 		return added;
 	}
+	
 	public int getLastMessageId(){
 		try{
 			return recentMessages.first().getId();
@@ -88,10 +102,12 @@ public class Room implements Parcelable, Comparable<Room>{
 			return 0;
 		}
 	}
+	
 	public TreeSet<ChatMessage> getMessages(){
 		return recentMessages;
 	}
-	//@Override
+	
+	@Override
 	public int compareTo(Room another) {
 		return this.getId().compareTo(another.getId());
 	}
