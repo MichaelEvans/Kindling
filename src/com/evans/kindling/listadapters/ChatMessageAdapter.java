@@ -1,8 +1,10 @@
 package com.evans.kindling.listadapters;
 
+import java.util.Date;
 import java.util.TreeSet;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,50 +19,63 @@ public class ChatMessageAdapter extends BaseAdapter {
 
 	private final TreeSet<ChatMessage> values;
 	private static LayoutInflater inflater;
+	private String date;
 	
 	public ChatMessageAdapter(Context ctx, TreeSet<ChatMessage> messages) {
 		values = messages;
 		inflater = (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
-	@Override
+	//@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
 		return values.size();
 	}
 
-	@Override
+	//@Override
 	public Object getItem(int k) {
 		ChatMessage element = Iterables.get(values, k);
 		return element;
 	}
 
-	@Override
+	//@Override
 	public long getItemId(int arg0) {
 		return 0;
 	}
 
-	@Override
+	//@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View vi=convertView;
 		ViewHolder holder;
-		ChatMessage room = Iterables.get(values, position);
+		ChatMessage message = Iterables.get(values, position);
 		if(convertView==null){
-			vi = inflater.inflate(R.layout.room_list_item, null);
+			vi = inflater.inflate(R.layout.message_list_item, null);
 			holder=new ViewHolder();
-			holder.title=(TextView)vi.findViewById(R.id.firstLineTextView);
-			//holder.count=(TextView)vi.findViewById(R.id.secondLineTextView);
+			holder.author=(TextView)vi.findViewById(R.id.message_author);
+			holder.message=(TextView)vi.findViewById(R.id.message_text);
+			holder.date=(TextView)vi.findViewById(R.id.message_date);
 			vi.setTag(holder);
 		}
-		else
+		else{
 			holder=(ViewHolder)vi.getTag();
-
-		holder.title.setText(room.getBody());
-		//holder.count.setText("1");//TODO: Update this
+		}
+		holder.author.setText(message.getAuthor()+":");
+		holder.message.setText(message.getBody());
+		//Log.d("testA","Display"+message.output2());
+		holder.date.setText(message.getDate());
+		//holder.date.setText(room.getCreatedAt().toString());
+		/*date = room.getCreatedAt();
+		holder.date.setText(""+
+		date.getDay() + " " +
+		date.getHours() + ":" +
+		date.getMinutes());
+		*/
+		//holder.count.setText("5");//TODO: Update this
 		return vi;
 	}
 	public static class ViewHolder{
-		public TextView title;
-		public TextView count;
+		public TextView author;
+		public TextView message;
+		public TextView date;
 	}
 }

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/message_author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:background="#FFFFFF"
+        android:paddingLeft="6dip"
+        android:paddingTop="6dip"
+        android:textSize="12dip"
+        android:text="@string/sample_author"
+        android:textColor="#000000" />
+    
+    <TextView
+	    android:id="@+id/message_text"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignWithParentIfMissing="true"
+	    
+	    android:layout_below="@id/message_author"
+	    android:singleLine="false"
+	    android:background="#FFFFFF"
+	    android:paddingLeft="6dip"
+	    android:paddingTop="1dip"
+	    android:text="@string/sample_message"
+	    android:textSize="15dip"
+	    android:textColor="@color/holo">
+	</TextView>
+	
+     <TextView 
+        android:id="@+id/message_date" 
+   		android:layout_below="@id/message_text"
+   		android:background="#FFFFFF"
+		android:layout_alignParentRight="true"
+		android:layout_width="wrap_content" 
+		android:text="@string/sample_time" 
+		android:paddingRight="7dip"
+		android:paddingBottom="1dip"
+		android:textSize="9dip"
+		android:layout_height="wrap_content">
+     </TextView>
+
+</RelativeLayout>

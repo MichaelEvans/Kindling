@@ -9,5 +9,8 @@
     <string name="title_section2">Section 2</string>
     <string name="title_section1">Section 1</string>
     <string name="title_activity_chat">ChatActivity</string>
+    <string name="sample_author">Author:</string>
+     <string name="sample_time">3:00 pm</string>
+    <string name="sample_message">This is a sample message, multi line test</string>
 
 </resources>

@@ -1,7 +1,10 @@
 package com.evans.kindling;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -26,12 +29,14 @@ public class ChatService extends Service {
 	public static String BROADCAST_ACTION = "com.evans.kindling.NEWMESSAGE";
 
 	private static Set<Room> activeRooms = new ConcurrentSkipListSet<Room>();
-	private static HashMap<Room, Integer> lastMessageForRoom = new HashMap();
+	private static HashMap<Room, Integer> lastMessageForRoom = new HashMap<Room, Integer>();
 	static final int UPDATE_INTERVAL= 1000;
 	private static String token;
 	private Timer timer = new Timer();
-
 	private static ChatService instance = null;
+	private HashMap<String,String> userNames = new HashMap<String,String>();
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	private String hold;
 
 	public static boolean isInstanceCreated() { 
 		return instance != null; 
@@ -52,6 +57,8 @@ public class ChatService extends Service {
 		Log.e("Kindling", "Service Started");
 		SharedPreferences preferences = this.getSharedPreferences("Kindling", MODE_PRIVATE);
 		token = preferences.getString("token", null);
+		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+		
 		doSomethingRepeatedly();
 		//Log.d(TAG, "onCreate");
 
@@ -67,6 +74,8 @@ public class ChatService extends Service {
 					
 					Log.w("Kindling", "" + lastMessageForRoom.get(r) + " " + r.getMessages().size());
 					HttpRequest response = HttpRequest.get("https://michaelevans.campfirenow.com/room/"+r.getId()+"/recent.json?since_message_id="+lastMessageForRoom.get(r)).basic(token, "x");
+					//HttpRequest response2 = HttpRequest.get("https://michaelevans.campfirenow.com/users/1090301.json").basic(token, "x");
+					//Log.d("testA", response2.body());
 					String body = response.body();
 					try {
 						JSONObject object = new JSONObject(body);
@@ -77,6 +86,22 @@ public class ChatService extends Service {
 							if(temp.getString("body") != null && !temp.getString("body").equals("null")){
 								cm.setId(temp.getInt("id"));
 								cm.setBody(temp.getString("body"));
+								cm.setDate(simpleDateFormat.parse(temp.getString("created_at")).toLocaleString());
+								hold = temp.getString("user_id");
+								if(!userNames.containsKey(hold)){
+									HttpRequest resp = HttpRequest.get("https://michaelevans.campfirenow.com/users/"+hold+".json").basic(token, "x");
+									String b = resp.body();
+									Log.d("testA",b);
+									JSONObject jsn = new JSONObject(b);
+									try{
+										b = jsn.getJSONObject("user").getString("name");
+										Log.d("testA",b);
+										userNames.put(hold, b);
+									}catch(JSONException e1){
+										Log.d("testA","name json fail");
+									}
+								}
+								cm.setAuthor(userNames.get(hold));
 								if(!r.containsMessage(cm)){
 									Log.d("Kindling", ""+ cm.getId() + " " +r.getLastMessageId());
 									//							if(temp.getString("user_id") != null)
@@ -88,6 +113,7 @@ public class ChatService extends Service {
 									Bundle b = new Bundle();
 									b.putInt("room", r.getId());
 									b.putParcelable("message", cm);
+									//Log.d("testA", "CS"+cm.output2());
 									broadcast.putExtras(b);
 									broadcast.setAction(BROADCAST_ACTION);
 									sendOrderedBroadcast(broadcast, null);
@@ -98,6 +124,9 @@ public class ChatService extends Service {
 					} catch (JSONException e) {
 						e.printStackTrace();
 						break;
+					} catch (ParseException e) {
+						//Catch for simpleDate parser 
+						e.printStackTrace();
 					}
 				}
 				//Log.d("MyService", String.valueOf(++counter));

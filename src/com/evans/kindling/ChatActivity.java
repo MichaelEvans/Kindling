@@ -84,6 +84,7 @@ public class ChatActivity extends FragmentActivity {
 		//Log.d("Kindling", "NOTIFY " + .getInt("message"));
 		int roomId = intent.getExtras().getInt("room");
 		ChatMessage cm = intent.getExtras().getParcelable("message");
+		//Log.d("testA", "ChatActivity"+ cm.output());
 		for(Room r : activeRooms){
 			if(r.getId() == roomId){
 				if(r.addMessage(cm))
@@ -110,6 +111,7 @@ public class ChatActivity extends FragmentActivity {
 		if(activeRooms == null)
 			activeRooms = new TreeSet<Room>();
 		Room room = getIntent().getExtras().getParcelable("room");
+		Log.d("testA", "Room id is:"+room.getId());
 		Log.e("Kindling", "Entering room: " + room.getName());
 		activeRooms.add(room);
 
@@ -122,15 +124,15 @@ public class ChatActivity extends FragmentActivity {
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 
 		mViewPager.setOnPageChangeListener(new OnPageChangeListener() {
-			@Override
+			//@Override
 			public void onPageSelected(int position) {
 				Log.e("Kindling", "" + position);
 				((DummySectionFragment) mapping.get(Iterables.get(activeRooms, position))).scrollToBottom();
 			}
-			@Override
+			//@Override
 			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 			}
-			@Override
+			//@Override
 			public void onPageScrollStateChanged(int state) {
 			}
 		});
@@ -275,7 +277,7 @@ public class ChatActivity extends FragmentActivity {
 			RelativeLayout.LayoutParams tvParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 			EditText edit = new EditText(getActivity());
 			edit.setOnEditorActionListener(new OnEditorActionListener() {
-				@Override
+				//@Override
 				public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 					if(v.getText().toString().length()>0)
 						new SubmitMessage().execute(v.getText().toString(), String.valueOf(Iterables.get(activeRooms, args.getInt(ARG_SECTION_NUMBER)).getId()));

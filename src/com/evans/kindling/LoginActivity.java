@@ -29,9 +29,18 @@ public class LoginActivity extends Activity {
 		Button submitButton = (Button) findViewById(R.id.loginButton);
 		final EditText login = (EditText) findViewById(R.id.username);
 		password = (EditText) findViewById(R.id.password);
-
+		login.setOnClickListener(new OnClickListener() {
+			//@Override
+			public void onClick(View v) {
+				if (login.getText().toString().compareTo("Username")==0){ 
+					login.setText("");
+					password.setText("");
+				}
+			}
+		});
+				
 		submitButton.setOnClickListener(new OnClickListener() {
-			@Override
+			//@Override
 			public void onClick(View v) {
 				//doLogin(login.getText().toString(), password.getText().toString());	
 				new LoginTask().execute(login.getText().toString(), password.getText().toString());
@@ -45,11 +54,7 @@ public class LoginActivity extends Activity {
 
 	protected void doLogin(String username, String password) {
 		Log.e("Kindling", username + " " + password);
-
 		//JSONObject results = 
-
-
-
 	}
 	class LoginTask extends AsyncTask<String, String, String> {
 
