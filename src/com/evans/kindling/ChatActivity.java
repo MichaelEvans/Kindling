@@ -13,7 +13,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -32,6 +36,8 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,10 +46,13 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 
 import com.evans.kindling.listadapters.ChatMessageAdapter;
 import com.evans.kindling.model.ChatMessage;
 import com.evans.kindling.model.Room;
+import com.github.kevinsawicki.http.HttpRequest;
+import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 import com.google.common.collect.Iterables;
 
 public class ChatActivity extends FragmentActivity {
@@ -66,6 +75,8 @@ public class ChatActivity extends FragmentActivity {
 	private static String token;
 	private HashMap<Room, Fragment> mapping;
 	private static HttpClient httpclient = new DefaultHttpClient();
+	private Room room;
+	private AlertDialog alert;
 
 	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 		@Override
@@ -110,7 +121,7 @@ public class ChatActivity extends FragmentActivity {
 
 		if(activeRooms == null)
 			activeRooms = new TreeSet<Room>();
-		Room room = getIntent().getExtras().getParcelable("room");
+		room = getIntent().getExtras().getParcelable("room");
 		Log.d("testA", "Room id is:"+room.getId());
 		Log.e("Kindling", "Entering room: " + room.getName());
 		activeRooms.add(room);
@@ -151,21 +162,63 @@ public class ChatActivity extends FragmentActivity {
 		//activeRooms = new TreeSet<Room>();
 		unregisterReceiver(broadcastReceiver);
 	}
-	//    @Override
-	//    public boolean onCreateOptionsMenu(Menu menu) {
-	//        getMenuInflater().inflate(R.menu.activity_chat, menu);
-	//        return true;
-	//    }
-
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.activity_chat, menu);
+	    return true;
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		case R.id.menu_users:
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("Who\'s here?");
+			builder.setMessage("Loading");
+			alert = builder.create();
+			new RequestUsers().execute("https://michaelevans.campfirenow.com/room/"+room.getId()+".json");
+			return true;
+		case R.id.menu_leave:
+			Toast.makeText(this, "Leave pressed", Toast.LENGTH_SHORT).show();
+			return true;
 		case android.R.id.home:
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	private class RequestUsers extends AsyncTask<String, Integer, String> {
+		@Override
+		protected String doInBackground(String... arg) {
+			HttpRequest resp = null;
+			StringBuffer names = new StringBuffer();
+			try {
+				resp = HttpRequest.get(arg[0]).basic(token, "x");
+				JSONObject jsn = new JSONObject(resp.body());
+				JSONArray jArray = jsn.getJSONObject("room").getJSONArray("users");
+				for(int i=0;i<jArray.length();i++){
+					jsn = jArray.getJSONObject(i);
+					names.append(jsn.getString("name") +"\n");
+				}
+			} catch (HttpRequestException e) {
+				Log.d("testA","http failed!");
+			} catch (JSONException e) {
+				Log.d("testA","Json failed!");
+			}
+			if(resp == null)
+				return "Request Failed";
+			else
+				return names.toString();
+		}
+		protected void onPreExecute(){
+			alert.show();
+		}
+		protected void onPostExecute(String result) {
+			alert.setMessage(result);
+	    }
+		
 	}
 
 

@@ -3,4 +3,10 @@
         android:title="@string/menu_settings"
         android:orderInCategory="100"
         android:showAsAction="never" />
+    <item android:id="@+id/menu_users"
+          android:title="@string/menu_chat_user"
+          android:showAsAction="always|withText" />
+     <item android:id="@+id/menu_leave"
+          android:title="@string/menu_chat_leave"
+          android:showAsAction="always|withText" />
 </menu>
