@@ -91,11 +91,11 @@ public class ChatService extends Service {
 								if(!userNames.containsKey(hold)){
 									HttpRequest resp = HttpRequest.get("https://michaelevans.campfirenow.com/users/"+hold+".json").basic(token, "x");
 									String b = resp.body();
-									Log.d("testA",b);
+									//Log.d("testA",b);
 									JSONObject jsn = new JSONObject(b);
 									try{
 										b = jsn.getJSONObject("user").getString("name");
-										Log.d("testA",b);
+										//Log.d("testA",b);
 										userNames.put(hold, b);
 									}catch(JSONException e1){
 										Log.d("testA","name json fail");

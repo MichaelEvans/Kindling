@@ -1,19 +1,27 @@
 package com.evans.kindling;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -32,6 +40,8 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,10 +50,13 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 
 import com.evans.kindling.listadapters.ChatMessageAdapter;
 import com.evans.kindling.model.ChatMessage;
 import com.evans.kindling.model.Room;
+import com.github.kevinsawicki.http.HttpRequest;
+import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 import com.google.common.collect.Iterables;
 
 public class ChatActivity extends FragmentActivity {
@@ -66,6 +79,8 @@ public class ChatActivity extends FragmentActivity {
 	private static String token;
 	private HashMap<Room, Fragment> mapping;
 	private static HttpClient httpclient = new DefaultHttpClient();
+	private Room room;
+	private AlertDialog alert;
 
 	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 		@Override
@@ -110,10 +125,12 @@ public class ChatActivity extends FragmentActivity {
 
 		if(activeRooms == null)
 			activeRooms = new TreeSet<Room>();
-		Room room = getIntent().getExtras().getParcelable("room");
+		room = getIntent().getExtras().getParcelable("room");
 		Log.d("testA", "Room id is:"+room.getId());
 		Log.e("Kindling", "Entering room: " + room.getName());
 		activeRooms.add(room);
+		Log.d("testA","OnCreate was called");
+		new RequestEnter().execute("https://michaelevans.campfirenow.com/room/"+room.getId()+"/join.xml");
 
 		// Create the adapter that will return a fragment for each of the three primary sections
 		// of the app.
@@ -151,22 +168,134 @@ public class ChatActivity extends FragmentActivity {
 		//activeRooms = new TreeSet<Room>();
 		unregisterReceiver(broadcastReceiver);
 	}
-	//    @Override
-	//    public boolean onCreateOptionsMenu(Menu menu) {
-	//        getMenuInflater().inflate(R.menu.activity_chat, menu);
-	//        return true;
-	//    }
-
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.activity_chat, menu);
+	    return true;
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		case R.id.menu_users:
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("Who\'s here?");
+			builder.setMessage("Loading");
+			alert = builder.create();
+			new RequestUsers().execute("https://michaelevans.campfirenow.com/room/"+room.getId()+".json");
+			return true;
+		case R.id.menu_leave:
+			AlertDialog.Builder builder2 = new AlertDialog.Builder(this);
+			builder2.setTitle("Leave");
+			builder2.setMessage("Loading");
+			alert = builder2.create();
+			new Requestleave().execute("https://michaelevans.campfirenow.com/room/"+room.getId()+"/leave.xml");
+			return true;
 		case android.R.id.home:
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	private class RequestUsers extends AsyncTask<String, Integer, String> {
+		@Override
+		protected String doInBackground(String... arg) {
+			HttpRequest resp = null;
+			StringBuffer names = new StringBuffer();
+			try {
+				resp = HttpRequest.get(arg[0]).basic(token, "x");
+				JSONObject jsn = new JSONObject(resp.body());
+				JSONArray jArray = jsn.getJSONObject("room").getJSONArray("users");
+				for(int i=0;i<jArray.length();i++){
+					jsn = jArray.getJSONObject(i);
+					names.append(jsn.getString("name") +"\n");
+				}
+			} catch (HttpRequestException e) {
+				Log.d("testA","http failed!");
+			} catch (JSONException e) {
+				Log.d("testA","Json failed!");
+			}
+			if(resp == null)
+				return "Request Failed";
+			else
+				return names.toString();
+		}
+		protected void onPreExecute(){
+			alert.show();
+		}
+		protected void onPostExecute(String result) {
+			alert.setMessage(result);
+	    }
+		
+	}
+	
+	private class RequestEnter extends AsyncTask<String, Integer, String> {
+		@Override
+		protected String doInBackground(String... arg) {
+			HttpResponse r = null;
+			try {
+				URI url= new URI(arg[0]);
+				HttpPost httppost = new HttpPost(url);
+				httppost.setHeader(new BasicHeader("Authorization", "Basic " + new String(Base64.encode((token + ":" + "X").getBytes(),Base64.NO_WRAP))));
+				httppost.setHeader(new BasicHeader("Content-Type", "application/xml"));
+				//HttpResponse r
+				r = httpclient.execute(httppost);
+			} catch (HttpRequestException e) {
+				Log.d("testA","Leave http failed!");
+			} catch (URISyntaxException e) {
+				Log.d("testA","URI Syntax problem!");
+				e.printStackTrace();
+			} catch (ClientProtocolException e) {
+				Log.d("testA","execute problem!");
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			if(r == null)
+				return "Request Failed";
+			else
+				return "\nStatus: "+ r.getStatusLine().getStatusCode();
+		}
+		protected void onPostExecute(String result) {
+	    }
+	}
+	
+	private class Requestleave extends AsyncTask<String, Integer, String> {
+		@Override
+		protected String doInBackground(String... arg) {
+			HttpResponse r = null;
+			try {
+				URI url= new URI(arg[0]);
+				HttpPost httppost = new HttpPost(url);
+				httppost.setHeader(new BasicHeader("Authorization", "Basic " + new String(Base64.encode((token + ":" + "X").getBytes(),Base64.NO_WRAP))));
+				httppost.setHeader(new BasicHeader("Content-Type", "application/xml"));
+				//HttpResponse r
+				r = httpclient.execute(httppost);
+			} catch (HttpRequestException e) {
+				Log.d("testA","Leave http failed!");
+			} catch (URISyntaxException e) {
+				Log.d("testA","URI Syntax problem!");
+				e.printStackTrace();
+			} catch (ClientProtocolException e) {
+				Log.d("testA","execute problem!");
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			if(r == null)
+				return "Request Failed";
+			else
+				return "\nStatus: "+ r.getStatusLine().getStatusCode();
+		}
+		protected void onPostExecute(String result) {
+			alert.setMessage(result);
+			alert.show();
+			finish();
+	    }
+	}
+
 
 
 
