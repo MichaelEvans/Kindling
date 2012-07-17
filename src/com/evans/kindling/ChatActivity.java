@@ -1,12 +1,16 @@
 package com.evans.kindling;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -125,6 +129,8 @@ public class ChatActivity extends FragmentActivity {
 		Log.d("testA", "Room id is:"+room.getId());
 		Log.e("Kindling", "Entering room: " + room.getName());
 		activeRooms.add(room);
+		Log.d("testA","OnCreate was called");
+		new RequestEnter().execute("https://michaelevans.campfirenow.com/room/"+room.getId()+"/join.xml");
 
 		// Create the adapter that will return a fragment for each of the three primary sections
 		// of the app.
@@ -185,7 +191,7 @@ public class ChatActivity extends FragmentActivity {
 			builder2.setTitle("Leave");
 			builder2.setMessage("Loading");
 			alert = builder2.create();
-			new Requestleave().execute("https://michaelevans.campfirenow.com/room/"+room.getId()+"/leave.json");
+			new Requestleave().execute("https://michaelevans.campfirenow.com/room/"+room.getId()+"/leave.xml");
 			return true;
 		case android.R.id.home:
 			NavUtils.navigateUpFromSameTask(this);
@@ -225,24 +231,68 @@ public class ChatActivity extends FragmentActivity {
 		
 	}
 	
+	private class RequestEnter extends AsyncTask<String, Integer, String> {
+		@Override
+		protected String doInBackground(String... arg) {
+			HttpResponse r = null;
+			try {
+				URI url= new URI(arg[0]);
+				HttpPost httppost = new HttpPost(url);
+				httppost.setHeader(new BasicHeader("Authorization", "Basic " + new String(Base64.encode((token + ":" + "X").getBytes(),Base64.NO_WRAP))));
+				httppost.setHeader(new BasicHeader("Content-Type", "application/xml"));
+				//HttpResponse r
+				r = httpclient.execute(httppost);
+			} catch (HttpRequestException e) {
+				Log.d("testA","Leave http failed!");
+			} catch (URISyntaxException e) {
+				Log.d("testA","URI Syntax problem!");
+				e.printStackTrace();
+			} catch (ClientProtocolException e) {
+				Log.d("testA","execute problem!");
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			if(r == null)
+				return "Request Failed";
+			else
+				return "\nStatus: "+ r.getStatusLine().getStatusCode();
+		}
+		protected void onPostExecute(String result) {
+	    }
+	}
+	
 	private class Requestleave extends AsyncTask<String, Integer, String> {
 		@Override
 		protected String doInBackground(String... arg) {
-			HttpRequest resp = null;
+			HttpResponse r = null;
 			try {
-				resp = HttpRequest.post(arg[0]).basic(token, "x");
+				URI url= new URI(arg[0]);
+				HttpPost httppost = new HttpPost(url);
+				httppost.setHeader(new BasicHeader("Authorization", "Basic " + new String(Base64.encode((token + ":" + "X").getBytes(),Base64.NO_WRAP))));
+				httppost.setHeader(new BasicHeader("Content-Type", "application/xml"));
+				//HttpResponse r
+				r = httpclient.execute(httppost);
 			} catch (HttpRequestException e) {
 				Log.d("testA","Leave http failed!");
+			} catch (URISyntaxException e) {
+				Log.d("testA","URI Syntax problem!");
+				e.printStackTrace();
+			} catch (ClientProtocolException e) {
+				Log.d("testA","execute problem!");
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			if(resp == null)
+			if(r == null)
 				return "Request Failed";
 			else
-				return resp.toString()+"\nStatus: "+ resp.message();
+				return "\nStatus: "+ r.getStatusLine().getStatusCode();
 		}
 		protected void onPostExecute(String result) {
 			alert.setMessage(result);
 			alert.show();
-			//finish();
+			finish();
 	    }
 	}
 
