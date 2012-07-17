@@ -22,5 +22,13 @@
         android:paddingBottom="2dip"
         android:singleLine="true"
         android:textColor="@color/holo" />
+     <TextView
+        android:id="@+id/thirdLineTextView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="marquee"
+        android:paddingBottom="2dip"
+        android:singleLine="true"
+        android:textColor="@color/holo" />
 
 </LinearLayout>

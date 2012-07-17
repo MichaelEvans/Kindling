@@ -181,7 +181,9 @@ public class ChatActivity extends FragmentActivity {
 			new RequestUsers().execute("https://michaelevans.campfirenow.com/room/"+room.getId()+".json");
 			return true;
 		case R.id.menu_leave:
-			Toast.makeText(this, "Leave pressed", Toast.LENGTH_SHORT).show();
+			new Requestleave().execute("https://michaelevans.campfirenow.com/room/"+room.getId()+"/leave.json");
+			Intent i = new Intent(ChatActivity.this,RoomActivity.class);
+			startActivity(i);
 			return true;
 		case android.R.id.home:
 			NavUtils.navigateUpFromSameTask(this);
@@ -220,6 +222,23 @@ public class ChatActivity extends FragmentActivity {
 	    }
 		
 	}
+	
+	private class Requestleave extends AsyncTask<String, Integer, String> {
+		@Override
+		protected String doInBackground(String... arg) {
+			HttpRequest resp = null;
+			try {
+				resp = HttpRequest.get(arg[0]).basic(token, "x");
+			} catch (HttpRequestException e) {
+				Log.d("testA","Leave http failed!");
+			}
+			if(resp == null)
+				return "Request Failed";
+			else
+				return "Left";
+		}
+	}
+
 
 
 
